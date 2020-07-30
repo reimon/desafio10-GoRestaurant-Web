@@ -35,15 +35,25 @@ const Dashboard: React.FC = () => {
     loadFoods();
   }, []);
 
-  async function handleAddFood(
-    food: Omit<IFoodPlate, 'id' | 'available'>,
-  ): Promise<void> {
-    try {
-      // TODO ADD A NEW FOOD PLATE TO THE API
-    } catch (err) {
-      console.log(err);
-    }
-  }
+  const handleAddFood = useCallback(
+    async (food: Omit<IFoodPlate, 'id' | 'available'>): Promise<void> => {
+      try {
+        await api
+          .post('/foods', {
+            ...food,
+            available: true,
+          })
+          .then(response => {
+            const newFood = response.data;
+            setFoods([...foods, newFood]);
+          });
+        // TODO ADD A NEW FOOD PLATE TO THE API
+      } catch (err) {
+        console.log(err);
+      }
+    },
+    [foods],
+  );
 
   const handleUpdateFood = useCallback(
     async (food: Omit<IFoodPlate, 'id' | 'available'>): Promise<void> => {
@@ -80,9 +90,9 @@ const Dashboard: React.FC = () => {
     [foods],
   );
 
-  function toggleModal(): void {
+  const toggleModal = useCallback((): void => {
     setModalOpen(!modalOpen);
-  }
+  }, [modalOpen]);
 
   function toggleEditModal(): void {
     setEditModalOpen(!editModalOpen);
